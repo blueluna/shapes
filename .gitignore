@@ -1,0 +1,5 @@
+*.pdb
+shapelib/
+glew/
+[Dd]ebug/
+[Rr]elease/
