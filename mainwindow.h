@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QTreeWidgetItem>
 
 #include "shapefile.h"
 
@@ -25,6 +26,7 @@ private:
 
 private slots:
     void onFileOpen();
+    void onSelectShape(QTreeWidgetItem *item, int column);
 };
 
 #endif // MAINWINDOW_H

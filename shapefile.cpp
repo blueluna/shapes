@@ -43,6 +43,8 @@ int ShapeFile::GetShape(int index, ShapeObject &object)
     if (handle == 0) {
         return -1;
     }
-    object.object = SHPReadObject(handle, index);
+    SHPObject *obj = SHPReadObject(handle, index);
+    object.Assign(obj);
+    SHPDestroyObject(obj);
     return 0;
 }

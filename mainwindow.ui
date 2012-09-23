@@ -113,7 +113,6 @@ QHeaderView::section {
           <height>100</height>
          </size>
         </property>
-        <zorder>listView</zorder>
        </widget>
       </item>
       <item>
@@ -200,6 +199,22 @@ QHeaderView::section {
     <hint type="destinationlabel">
      <x>298</x>
      <y>224</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>treeWidget</sender>
+   <signal>itemDoubleClicked(QTreeWidgetItem*,int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>onSelectShape(QTreeWidgetItem*,int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>675</x>
+     <y>288</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>406</x>
+     <y>287</y>
     </hint>
    </hints>
   </connection>

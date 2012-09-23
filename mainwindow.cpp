@@ -34,19 +34,32 @@ void MainWindow::onFileOpen()
         ui->shapeType->setText(typeString);
         QList<QTreeWidgetItem *> items;
         for (int i = 0; i < count; i++) {
-            ShapeObject object;
-            if (shapefile.GetShape(i, object) >= 0) {
-                QStringList list(QString("%1").arg(i));
-                list << QString::fromStdString(object.GetTypeString());
-                items.append(
-                    new QTreeWidgetItem(
-                        (QTreeWidget*)0,
-                        list
-                    )
-                );
-            }
+            QStringList list(QString("%1").arg(i));
+            list << tr("");
+            QTreeWidgetItem *item = new QTreeWidgetItem((QTreeWidget*)0, list);
+            QVariant v(i);
+            item->setData(0, Qt::UserRole, v);
+            items.append(item);
         }
         ui->treeWidget->clear();
         ui->treeWidget->insertTopLevelItems(0, items);
+        ShapeObject object;
+        shapefile.GetShape(1, object);
+        ui->glview->SetShape(object);
+        ui->glview->updateGL();
+    }
+}
+
+void MainWindow::onSelectShape(QTreeWidgetItem *item, int)
+{
+    if (item != 0) {
+        bool ok;
+        int index = item->data(0, Qt::UserRole).toInt(&ok);
+        if (ok) {
+            ShapeObject object;
+            shapefile.GetShape(index, object);
+            ui->glview->SetShape(object);
+            ui->glview->updateGL();
+        }
     }
 }
