@@ -2,6 +2,7 @@
 #define SHAPEOBJECT_H
 
 #include <string>
+#include <vector>
 
 #include <shapefil.h>
 
@@ -26,13 +27,23 @@ public:
         Box() : xmin(0.0), ymin(0.0), xmax(0.0), ymax(0.0) {}
     };
 
+    struct Part
+    {
+        int type;
+        int offset;
+        int length;
+
+        Part() : type(0), offset(0), length(0) {}
+    };
+
 protected:
-    int         index;
-    int         type;
-    int         vertexCount;
-    double      *xVertices;
-    double      *yVertices;
-    Box         bounds;
+    int                 index;
+    int                 type;
+    int                 vertexCount;
+    double              *xVertices;
+    double              *yVertices;
+    Box                 bounds;
+    std::vector<Part>   parts;
 
 public:
     ShapeObject();
@@ -59,6 +70,8 @@ public:
     double*     GetXs();
     double*     GetYs();
     Box         GetBounds();
+
+    std::vector<Part>   GetParts();
 };
 
 std::string ShapeTypeAsString(int shapetype);

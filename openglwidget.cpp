@@ -1,3 +1,5 @@
+#include <vector>
+
 #include "openglwidget.h"
 
 OpenGLWidget::OpenGLWidget(QWidget *parent)
@@ -49,27 +51,26 @@ void OpenGLWidget::resizeGL(int width, int height)
         ymax = bounds.ymax;
     }
 
-    double xoffset = (xmax - xmin) / 2.0;
-    double yoffset = (ymax - ymin) / 2.0;
+    double xoffset = ((xmax - xmin) / 2.0);
+    double yoffset = ((ymax - ymin) / 2.0);
     double xcenter = xmin + xoffset;
     double ycenter = ymin + yoffset;
 
-    float fxmin = xmin;
-    float fxmax = xmax;
-    float fymin = ymin;
-    float fymax = ymax;
+    float fxmin, fxmax, fymin, fymax;
 
     double s = (double)(width) / height;
     if (s > 1.0) {
-        xoffset *= s;
-        fxmin = xcenter - xoffset;
-        fxmax = xcenter + xoffset;
+        xoffset = (xoffset * s) + 0.001;
+        yoffset = yoffset + 0.001;
     }
     else {
-        yoffset /= s;
-        fymin = ycenter - yoffset;
-        fymax = ycenter + yoffset;
+        xoffset = xoffset + 0.001;
+        yoffset = (yoffset / s) + 0.001;
     }
+    fxmin = xcenter - xoffset;
+    fxmax = xcenter + xoffset;
+    fymin = ycenter - yoffset;
+    fymax = ycenter + yoffset;
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -82,12 +83,6 @@ void OpenGLWidget::resizeGL(int width, int height)
 void OpenGLWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT);
-    QString version(reinterpret_cast<const char*>(glGetString(GL_VERSION)));
-    QString glText = version + ", " + QString::number(vertexMax)
-            + ", " + QString::number(indexMax)
-            + ", " + QString::number(textureMax);
-    renderText(0.0, 0.0, 0.0, glText);
-
 
     // Draw shape
     if (indexCount > 0) {
@@ -97,30 +92,23 @@ void OpenGLWidget::paintGL()
         float *fptr = (float*)(vertices);
         glVertexPointer(3, GL_FLOAT, 20, fptr);
         glTexCoordPointer(2, GL_FLOAT, 20, fptr + 3);
-        int ic = (int)(indexCount);
         /*
         Handle driver limited vertex count i.e. opengl software rendering over remote desktop
         */
-        int index = 0;
-        int stride = (vertexMax / 3.0f) * 3;
-        stride = ic > stride ? stride : ic;
-        int count = stride;
-        while (index < ic) {
-            glDrawArrays(GL_POINTS, index, count);
-            index += stride;
-            count = (ic - index) > stride ? stride : (ic - index);
+        std::vector<ShapeObject::Part> parts = object.GetParts();
+        std::vector<ShapeObject::Part>::const_iterator iter = parts.begin();
+        while (iter != parts.end()) {
+            if (iter->type == SHPT_POLYGON) {
+                glDrawArrays(GL_LINE_LOOP, iter->offset, iter->length);
+            }
+            else {
+                glDrawArrays(GL_POINTS, iter->offset, iter->length);
+            }
+            iter++;
         }
         glDisableClientState(GL_VERTEX_ARRAY);
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     }
-
-    if (objectUpdated) {
-        objectUpdated = false;
-        if (object.IsValid()) {
-            objectText = QString::number(object.GetIndex()) + tr(": ") + QString::fromStdString(object.GetTypeString());
-        }
-    }
-    renderText(0.0, -180.0, 0.0, objectText);
 }
 
 void OpenGLWidget::SetShape(const ShapeObject& shape)

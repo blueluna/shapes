@@ -70,6 +70,24 @@ void ShapeObject::Assign(const SHPObject* obj)
         bounds.xmin = obj->dfXMin;
         bounds.ymax = obj->dfYMax;
         bounds.xmax = obj->dfXMax;
+
+        int *ps = obj->panPartStart;
+        int *pt = obj->panPartType;
+        Part part;
+        parts.clear();
+        for (int n = 0; n < obj->nParts; n++) {
+            part.type = *pt;
+            part.offset = *ps;
+            if ((n+1) == obj->nParts) {
+                part.length = vertexCount - *ps;
+            }
+            else {
+                part.length = *(ps+1) - *ps;
+            }
+            parts.push_back(part);
+            ps++;
+            pt++;
+        }
     }
 }
 
@@ -89,6 +107,7 @@ void ShapeObject::Assign(const ShapeObject& other)
             memcpy(yVertices, other.yVertices, vertexCount * sizeof(double));
         }
         bounds = other.bounds;
+        parts = other.parts;
     }
 }
 
@@ -130,6 +149,11 @@ double* ShapeObject::GetYs()
 ShapeObject::Box ShapeObject::GetBounds()
 {
     return bounds;
+}
+
+std::vector<ShapeObject::Part> ShapeObject::GetParts()
+{
+    return parts;
 }
 
 std::string ShapeTypeAsString(int shapeType)
