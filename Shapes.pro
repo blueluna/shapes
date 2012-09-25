@@ -28,3 +28,5 @@ LIBS += -Lglew/lib -lglew32 -Lshapelib -lshapelib
 INCLUDEPATH = glew/include shapelib
 
 RESOURCES +=
+
+OTHER_FILES +=

@@ -8,11 +8,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
-    ui->treeWidget->setColumnCount(1);
-    QStringList list(tr("Node"));
-    list << tr("Type");
-    ui->treeWidget->setHeaderLabels(list);
 }
 
 MainWindow::~MainWindow()
@@ -34,8 +29,7 @@ void MainWindow::onFileOpen()
         ui->shapeType->setText(typeString);
         QList<QTreeWidgetItem *> items;
         for (int i = 0; i < count; i++) {
-            QStringList list(QString("%1").arg(i));
-            list << tr("");
+            QStringList list(QString::number(i));
             QTreeWidgetItem *item = new QTreeWidgetItem((QTreeWidget*)0, list);
             QVariant v(i);
             item->setData(0, Qt::UserRole, v);

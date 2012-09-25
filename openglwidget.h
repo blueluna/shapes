@@ -3,6 +3,7 @@
 
 #include <gl/glew.h>
 #include <QGLWidget>
+#include <QGLShaderProgram>
 
 #include "shapeobject.h"
 
@@ -31,11 +32,16 @@ protected:
 
     vertex_t        *vertices;
     unsigned int    vertexCount;
-    unsigned int    *indicies;
-    unsigned int    indexCount;
+
+    bool                useShanders;
+    QGLShaderProgram    *shaderProgram;
+    int                 shaderMatrix;
+    int                 shaderVertices;
+    int                 shaderColor;
 
 public:
     explicit OpenGLWidget(QWidget *parent = 0);
+    ~OpenGLWidget();
 
     void    SetShape(const ShapeObject &shape);
 

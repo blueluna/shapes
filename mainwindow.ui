@@ -18,10 +18,12 @@
 	color: rgb(223, 223, 223);
 	background: rgb(47, 47, 47);
 }
-QLineEdit {
-	background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(47, 47, 47, 255), stop:1 rgba(64, 64, 64, 255));
+QLineEdit, QTreeView, QTreeWidget {
     border: 1px solid rgb(64, 64, 64);
 	border-radius: 3px;
+ }
+QLineEdit {
+	background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(47, 47, 47, 255), stop:1 rgba(64, 64, 64, 255));
 }
 QLineEdit:read-only {
 	background: rgb(53, 53, 53);
@@ -51,16 +53,17 @@ QMenu::separator {
 	height: 0px;
 }
 QHeaderView::section {
-	background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(47, 47, 47, 255), stop:1 rgba(64, 64, 64, 255));
+	background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:1 rgba(47, 47, 47, 255), stop:0 rgba(64, 64, 64, 255));
 	color: rgb(223, 223, 223);
 	padding: 4px;
-    border: 1px solid transparent;
- }</string>
+    border: 1px solid rgb(64, 64, 64);
+ }
+</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1,0">
       <property name="sizeConstraint">
        <enum>QLayout::SetDefaultConstraint</enum>
       </property>
@@ -102,7 +105,7 @@ QHeaderView::section {
       <item>
        <widget class="OpenGLWidget" name="glview" native="true">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
           <horstretch>1</horstretch>
           <verstretch>1</verstretch>
          </sizepolicy>
@@ -117,9 +120,15 @@ QHeaderView::section {
       </item>
       <item>
        <widget class="QTreeWidget" name="treeWidget">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>1</verstretch>
+         </sizepolicy>
+        </property>
         <column>
          <property name="text">
-          <string notr="true">1</string>
+          <string notr="true">Node</string>
          </property>
         </column>
        </widget>
