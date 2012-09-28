@@ -9,23 +9,22 @@ QT       += core gui opengl network
 TARGET = Shapes
 TEMPLATE = app
 
+SOURCES += src/shapeobject.cpp \
+    src/shapefile.cpp \
+    src/openglwidget.cpp \
+    src/mainwindow.cpp \
+    src/main.cpp
 
-SOURCES += main.cpp\
-        mainwindow.cpp \
-    openglwidget.cpp \
-    shapefile.cpp \
-    shapeobject.cpp
+HEADERS  += include/shapeobject.h \
+    include/shapefile.h \
+    include/openglwidget.h \
+    include/mainwindow.h
 
-HEADERS  += mainwindow.h \
-    openglwidget.h \
-    shapefile.h \
-    shapeobject.h
-
-FORMS    += mainwindow.ui
+FORMS    += ui/mainwindow.ui
 
 LIBS += -Lglew/lib -lglew32 -Lshapelib -lshapelib
 
-INCLUDEPATH = glew/include shapelib
+INCLUDEPATH = include glew/include shapelib
 
 RESOURCES +=
 
