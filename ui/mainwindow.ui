@@ -150,19 +150,19 @@ QHeaderView::section {
     <property name="title">
      <string>&amp;File</string>
     </property>
-    <addaction name="action_Open"/>
+    <addaction name="actionOpen"/>
     <addaction name="separator"/>
-    <addaction name="actionE_xit"/>
+    <addaction name="actionExit"/>
    </widget>
    <addaction name="menu_File"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="action_Open">
+  <action name="actionOpen">
    <property name="text">
     <string>&amp;Open</string>
    </property>
   </action>
-  <action name="actionE_xit">
+  <action name="actionExit">
    <property name="text">
     <string>E&amp;xit</string>
    </property>
@@ -173,15 +173,15 @@ QHeaderView::section {
   <customwidget>
    <class>OpenGLWidget</class>
    <extends>QWidget</extends>
-   <header>openglwidget.h</header>
+   <header>openglwidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>
  <connections>
   <connection>
-   <sender>actionE_xit</sender>
-   <signal>activated()</signal>
+   <sender>actionExit</sender>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>close()</slot>
    <hints>
@@ -196,8 +196,8 @@ QHeaderView::section {
    </hints>
   </connection>
   <connection>
-   <sender>action_Open</sender>
-   <signal>activated()</signal>
+   <sender>actionOpen</sender>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>onFileOpen()</slot>
    <hints>

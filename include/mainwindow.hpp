@@ -1,21 +1,23 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef MAINWINDOW_HPP
+#define MAINWINDOW_HPP
 
 #include <QMainWindow>
 #include <QTreeWidgetItem>
 
-#include "shapefile.h"
+#include "shapefile.hpp"
 
 namespace Ui {
 class MainWindow;
 }
+
+using namespace coldstar;
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 protected:
-    ShapeFile shapefile;
+	ShapeFile shapefile;
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -29,4 +31,4 @@ private slots:
     void onSelectShape(QTreeWidgetItem *item, int column);
 };
 
-#endif // MAINWINDOW_H
+#endif // MAINWINDOW_HPP
