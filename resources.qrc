@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/shaders">
+        <file alias="fragment">fragment.glsl</file>
+        <file alias="geometry">geometry.glsl</file>
+        <file alias="vertex">vertex.glsl</file>
+    </qresource>
+    <qresource prefix="/stylesheets">
+        <file alias="stylesheet">stylesheet.qss</file>
+    </qresource>
+</RCC>

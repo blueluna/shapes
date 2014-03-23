@@ -40,7 +40,10 @@ void MainWindow::onFileOpen()
 		}
 		ui->treeWidget->clear();
 		ui->treeWidget->insertTopLevelItems(0, items);
+		ui->glview->Zoom(-1);
 		ui->glview->updateGL();
+		uint32_t vCount = ui->glview->GetVertexCount();
+		ui->vertexCount->setText(QString::number(vCount));
 	}
 }
 
@@ -50,9 +53,10 @@ void MainWindow::onSelectShape(QTreeWidgetItem *item, int)
 		bool ok;
 		int index = item->data(0, Qt::UserRole).toInt(&ok);
 		if (ok) {
-			ShapeObject object;
-			shapefile.GetShape(index, object);
-			ui->glview->AddShape(object);
+			// ShapeObject object;
+			// shapefile.GetShape(index, object);
+			// ui->glview->AddShape(object);
+			ui->glview->Zoom(index);
 			ui->glview->updateGL();
 		}
 	}

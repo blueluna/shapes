@@ -30,6 +30,11 @@ win32:LIBS += -L"$$_PRO_FILE_PWD_/glew/lib" -L"$$_PRO_FILE_PWD_/shapelib" "glew3
 
 INCLUDEPATH = include glew/include shapelib
 
-RESOURCES +=
+RESOURCES += \
+    resources.qrc
 
-OTHER_FILES +=
+OTHER_FILES += \
+    geometry.glsl \
+    fragment.glsl \
+    vertex.glsl \
+    stylesheet.qss

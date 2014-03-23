@@ -29,6 +29,11 @@ int32_t ViewShape::GetOffset() const
 	return offset;
 }
 
+Box ViewShape::GetBounds() const
+{
+	return bounds;
+}
+
 std::vector<ViewPart> ViewShape::GetParts() const
 {
 	return parts;

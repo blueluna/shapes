@@ -18,6 +18,8 @@ class OpenGLWidget
 	Q_OBJECT
 
 protected:
+	QPoint						lastPos;
+
 	int							textureMax;
 	int							vertexMax;
 	int							indexMax;
@@ -33,6 +35,9 @@ protected:
 	int							shaderColor;
 
 	Box							bounds;
+	Box							viewBox;
+
+	int32_t						selectedObject;
 	bool						objectsUpdated;
 	std::vector<ViewShape>		objects;
 
@@ -42,12 +47,25 @@ public:
 
 	void	AddShape(const ShapeObject &shape);
 
+	uint32_t	GetVertexCount() const { return vertexCount; }
+
+	void Zoom(const int32_t shapeIndex);
+
 protected:
 	virtual void initializeGL();
 	virtual void resizeGL(int width, int height);
 	virtual void paintGL();
+	virtual void mousePressEvent(QMouseEvent *event);
+	virtual void mouseMoveEvent(QMouseEvent *event);
+	virtual void wheelEvent(QWheelEvent *event);
+
+	void UpdateViewBoxFromBounds();
+	void UpdateViewMatrix();
 
 	void	BuildObject(const ShapeObject& shape);
+
+	Point	translateCoordinate(const int x, const int y) const;
+	Point	translateCoordinate(const QPoint &p) const;
 
 signals:
 	

@@ -14,51 +14,7 @@
    <string>MainWindow</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">* {
-	color: rgb(223, 223, 223);
-	background: rgb(47, 47, 47);
-}
-QLineEdit, QTreeView, QTreeWidget {
-    border: 1px solid rgb(64, 64, 64);
-	border-radius: 3px;
- }
-QLineEdit {
-	background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(47, 47, 47, 255), stop:1 rgba(64, 64, 64, 255));
-}
-QLineEdit:read-only {
-	background: rgb(53, 53, 53);
-}
-QMenuBar {
-	background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(96, 96, 96, 255), stop:1 rgba(47, 47, 47, 255));
-}
-QMenuBar::item {
-	background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(96, 96, 96, 255), stop:1 rgba(47, 47, 47, 255));
-}
-QMenuBar::item:selected {
-	background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(96, 96, 96, 255), stop:1 rgba(64, 64, 64, 255));
- }
-QMenu {
-	background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(47, 47, 47, 255), stop:1 rgba(47, 47, 47, 255));
-}
-QMenu::item {
-	padding: 2px 25px 2px 20px;
-    border: 1px solid transparent;
- }
- QMenu::item:selected {
-	background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(47, 47, 47, 255), stop:1 rgba(64, 64, 64, 255));
-	border-color: rgb(50, 50, 50);
- }
-QMenu::separator {
-	border: 1px inset rgba(40, 40, 40, 255);
-	height: 0px;
-}
-QHeaderView::section {
-	background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:1 rgba(47, 47, 47, 255), stop:0 rgba(64, 64, 64, 255));
-	color: rgb(223, 223, 223);
-	padding: 4px;
-    border: 1px solid rgb(64, 64, 64);
- }
-</string>
+   <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -99,6 +55,16 @@ QHeaderView::section {
            <bool>true</bool>
           </property>
          </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="vertexCountLabel">
+          <property name="text">
+           <string>V Count</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="vertexCount"/>
         </item>
        </layout>
       </item>
@@ -156,7 +122,14 @@ QHeaderView::section {
    </widget>
    <addaction name="menu_File"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QStatusBar" name="statusBar">
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>0</height>
+    </size>
+   </property>
+  </widget>
   <action name="actionOpen">
    <property name="text">
     <string>&amp;Open</string>

@@ -34,8 +34,10 @@ public:
 	ViewShape();
 	ViewShape(const ShapeObject& other);
 
+	int32_t					GetIndex() const { return index; }
 	void					SetOffset(const int32_t offset);
 	int32_t					GetOffset() const;
+	Box						GetBounds() const;
 
 	std::vector<ViewPart>	GetParts() const;
 };
