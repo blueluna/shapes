@@ -3,3 +3,5 @@ shapelib/
 glew/
 [Dd]ebug/
 [Rr]elease/
+*.pro.user
+*.dll
