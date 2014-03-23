@@ -10,6 +10,8 @@
 #include "shapeobject.hpp"
 #include "viewshape.hpp"
 
+#include "../poly2tri/poly2tri.h"
+
 using namespace coldstar;
 
 class OpenGLWidget
@@ -41,11 +43,15 @@ protected:
 	bool						objectsUpdated;
 	std::vector<ViewShape>		objects;
 
+	Vertex						*polygon;
+	uint32_t					polygonVertexCount;
+
 public:
 	explicit OpenGLWidget(QWidget *parent = 0);
 	~OpenGLWidget();
 
 	void	AddShape(const ShapeObject &shape);
+	void	SetPolygon(const std::vector<p2t::Triangle*> &poly);
 
 	uint32_t	GetVertexCount() const { return vertexCount; }
 

@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include <QFileDialog>
 #include <QMessageBox>
+#include "poly2tri_helpers.hpp"
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -53,9 +54,58 @@ void MainWindow::onSelectShape(QTreeWidgetItem *item, int)
 		bool ok;
 		int index = item->data(0, Qt::UserRole).toInt(&ok);
 		if (ok) {
-			// ShapeObject object;
-			// shapefile.GetShape(index, object);
-			// ui->glview->AddShape(object);
+			ShapeObject object;
+			shapefile.GetShape(index, object);
+
+			qDebug() << "Shape " << index;
+			int32_t vertexCount = object.GetVertexCount();
+
+			QFile vertexFile("vertex.txt");
+			vertexFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text);
+			{
+				QTextStream vstrm(&vertexFile);
+				const double *x_ptr = object.GetXs();
+				const double *y_ptr = object.GetYs();
+				const double *x_end = x_ptr + object.GetVertexCount();
+				while (x_ptr < x_end) {
+					vstrm << *x_ptr << ", " << *y_ptr << "\n";
+					x_ptr++;
+					y_ptr++;
+				}
+				double x_first = object.GetXs()[0];
+				double y_first = object.GetYs()[0];
+				double x_last = object.GetXs()[object.GetVertexCount() - 1];
+				double y_last = object.GetYs()[object.GetVertexCount() - 1];
+				if (x_first == x_last && y_first == y_last) {
+					qDebug() << "First == Last";
+					vertexCount--;
+				}
+			}
+			vertexFile.close();
+
+			QFile triangleFile("triangle.txt");
+			triangleFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text);
+
+			std::vector<p2t::Point*> polyline = CreatePolyLine(object.GetXs(), object.GetYs(), vertexCount);
+			try {
+				QTextStream tstrm(&triangleFile);
+				p2t::CDT cdt(polyline);
+				cdt.Triangulate();
+				std::vector<p2t::Triangle*> triangles = cdt.GetTriangles();
+				p2t::Point* pt = 0;
+				for (auto ptri : triangles) {
+					for (int i = 0; i < 3; i++) {
+						pt = ptri->GetPoint(i);
+						tstrm << pt->x << ", " << pt->y << "\n";
+					}
+				}
+				ui->glview->SetPolygon(triangles);
+			}
+			catch (...) {}
+			DestroyPolyLine(polyline);
+
+			triangleFile.close();
+
 			ui->glview->Zoom(index);
 			ui->glview->updateGL();
 		}

@@ -17,6 +17,8 @@ OpenGLWidget::OpenGLWidget(QWidget *parent)
 	, shaderMatrix(-1)
 	, shaderVertices(-1)
 	, shaderColor(-1)
+	, polygon(0)
+	, polygonVertexCount(0)
 {
 	setFormat(QGLFormat(QGL::SampleBuffers));
 }
@@ -25,6 +27,15 @@ OpenGLWidget::~OpenGLWidget()
 {
 	if (shaderProgram != 0) {
 		delete shaderProgram;
+	}
+	if (vertices != 0) {
+		delete [] vertices;
+		vertexCount = 0;
+		vertexAllocated = 0;
+	}
+	if (polygon != 0) {
+		delete [] polygon;
+		polygonVertexCount = 0;
 	}
 }
 
@@ -219,6 +230,31 @@ void OpenGLWidget::paintGL()
 		return;
 	}
 
+	if (polygonVertexCount > 0) {
+
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glColor4f(1.0f, 0.0f, 0.0f, 0.7f);
+		float *fptr = (float*)(polygon);
+		glVertexPointer(3, GL_FLOAT, 20, fptr);
+		glTexCoordPointer(2, GL_FLOAT, 20, fptr + 3);
+
+		if (useShanders) {
+			shaderProgram->setUniformValue(shaderColor, QColor(255, 255, 255));
+		}
+		glDrawArrays(GL_TRIANGLES, 0, polygonVertexCount);
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		if (useShanders) {
+			shaderProgram->setUniformValue(shaderColor, QColor(64, 127, 127));
+		}
+		glDrawArrays(GL_TRIANGLES, 0, polygonVertexCount);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		glDisableClientState(GL_VERTEX_ARRAY);
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	}
+
 	if (useShanders) {
 		shaderProgram->enableAttributeArray(shaderVertices);
 	}
@@ -333,4 +369,30 @@ void OpenGLWidget::Zoom(const int32_t shapeIndex)
 		}
 	}
 	UpdateViewBoxFromBounds();
+}
+
+void OpenGLWidget::SetPolygon(const std::vector<p2t::Triangle*> &poly)
+{
+	if (polygon != 0) {
+		delete [] polygon;
+		polygonVertexCount = 0;
+	}
+	uint32_t len = static_cast<uint32_t>(poly.size() * 3);
+	polygon = new Vertex [len];
+	polygonVertexCount = len;
+
+	Vertex *vptr = polygon;
+
+	p2t::Point* pt = 0;
+	for (auto ptri : poly) {
+		for (int i = 0; i < 3; i++) {
+			pt = ptri->GetPoint(i);
+			vptr->x = static_cast<float>(pt->x);
+			vptr->y = static_cast<float>(pt->y);
+			vptr->z = 0.0f;
+			vptr->s = 0.0f;
+			vptr->t = 0.0f;
+			vptr++;
+		}
+	}
 }
