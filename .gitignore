@@ -5,3 +5,5 @@ glew/
 [Rr]elease/
 *.pro.user
 *.dll
+ui_*.h
+Makefile*
