@@ -46,8 +46,12 @@ void OpenGLWidget::initializeGL()
 	bool ok;
 
 	if (QGLShaderProgram::hasOpenGLShaderPrograms()) {
-		useShanders = true;
 		qDebug() << "Has shaders.";
+		useShanders = true;
+	}
+	// useShanders = false;
+
+	if (useShanders) {
 		shaderProgram = new QGLShaderProgram(this);
 		ok = shaderProgram->addShaderFromSourceFile(QGLShader::Vertex, ":/shaders/vertex");
 		if (!ok) {
@@ -114,14 +118,14 @@ void OpenGLWidget::mousePressEvent(QMouseEvent *event)
 	lastPos = event->pos();
 }
 
-Point OpenGLWidget::translateCoordinate(const int x, const int y) const
+Point<double> OpenGLWidget::translateCoordinate(const int x, const int y) const
 {
 	double xf = x * viewBox.Width() / width();
 	double yf = y * viewBox.Height() / height();
-	return Point(xf, yf);
+	return Point<double>(xf, yf);
 }
 
-Point OpenGLWidget::translateCoordinate(const QPoint &p) const
+Point<double> OpenGLWidget::translateCoordinate(const QPoint &p) const
 {
 	return translateCoordinate(p.x(), p.y());
 }
@@ -130,7 +134,7 @@ void OpenGLWidget::mouseMoveEvent(QMouseEvent *event)
 {
 	int dx = event->x() - lastPos.x();
 	int dy = event->y() - lastPos.y();
-	Point pt = translateCoordinate(dx, dy);
+	Point<double> pt = translateCoordinate(dx, dy);
 
 	if (event->buttons() & Qt::LeftButton) {
 		viewBox.Move(-pt.x, pt.y);
@@ -166,7 +170,7 @@ void OpenGLWidget::UpdateViewBoxFromBounds()
 	xmax = bounds.xmax;
 	ymin = bounds.ymin;
 	ymax = bounds.ymax;
-	Point center = bounds.Center();
+	Point<double> center = bounds.Center();
 	double xcenter = center.x;
 	double ycenter = center.y;
 	double xoffset = ((xmax - xmin) / 2.0);
@@ -233,12 +237,9 @@ void OpenGLWidget::paintGL()
 	if (polygonVertexCount > 0) {
 
 		glEnableClientState(GL_VERTEX_ARRAY);
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glColor4f(1.0f, 0.0f, 0.0f, 0.7f);
 		float *fptr = (float*)(polygon);
-		glVertexPointer(3, GL_FLOAT, 20, fptr);
-		glTexCoordPointer(2, GL_FLOAT, 20, fptr + 3);
-
+		glVertexPointer(2, GL_FLOAT, 0, fptr);
 		if (useShanders) {
 			shaderProgram->setUniformValue(shaderColor, QColor(255, 255, 255));
 		}
@@ -252,7 +253,6 @@ void OpenGLWidget::paintGL()
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		glDisableClientState(GL_VERTEX_ARRAY);
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	}
 
 	if (useShanders) {
@@ -260,19 +260,20 @@ void OpenGLWidget::paintGL()
 	}
 	else {
 		glEnableClientState(GL_VERTEX_ARRAY);
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glColor4f(1.0f, 1.0f, 1.0f, 0.7f);
 		float *fptr = (float*)(vertices);
-		glVertexPointer(3, GL_FLOAT, 20, fptr);
-		glTexCoordPointer(2, GL_FLOAT, 20, fptr + 3);
+		glVertexPointer(2, GL_FLOAT, 0, fptr);
 	}
 
 	for (auto shape : objects) {
-		QColor color(255, 255, 255, 255);
-		if (shape.GetIndex() == selectedObject) {
-			color.setRgb(128, 196, 221);
+
+		if (useShanders) {
+			QColor color(255, 255, 255, 255);
+			if (shape.GetIndex() == selectedObject) {
+				color.setRgb(128, 196, 221);
+			}
+			shaderProgram->setUniformValue(shaderColor, color);
 		}
-		shaderProgram->setUniformValue(shaderColor, color);
 		int32_t shape_offset = shape.GetOffset();
 		for (auto part : shape.GetParts()) {
 			if (part.type == SHPT_POLYGON) {
@@ -289,7 +290,6 @@ void OpenGLWidget::paintGL()
 	}
 	else {
 		glDisableClientState(GL_VERTEX_ARRAY);
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	}
 }
 
@@ -305,38 +305,34 @@ void OpenGLWidget::BuildObject(const ShapeObject& shape)
 
 	if ((vertexCount + count) > vertexAllocated) {
 		uint32_t new_length = (((vertexCount + count) / 10240) + 1) * 10240;
-		Vertex *vp = new Vertex [new_length];
+		Point<float> *vp = new Point<float> [new_length];
 		if (vertexCount != 0) {
-			memcpy(vp, vertices, vertexCount * sizeof(Vertex));
+			memcpy(vp, vertices
+				   , vertexCount * sizeof(Point<float>));
 		}
-		delete [] vertices;
+		if (vertices != 0) {
+			delete [] vertices;
+		}
 		vertices = vp;
 		vertexAllocated = new_length;
 	}
 
 	objects.back().SetOffset(vertexCount);
 
-	Vertex *vptr = vertices + vertexCount;
-	double *xptr = shape.GetXs();
-	double *yptr = shape.GetYs();
-
-
+	const Point<double> *src_ptr = shape.GetVertices();
+	Point<float> *dst_ptr = vertices + vertexCount;
 
 	for (int i = 0; i < count; i++) {
-		vptr->x = static_cast<float>(*xptr);
-		vptr->y = static_cast<float>(*yptr);
-		vptr->z = 0.0f;
-		vptr->s = 0.0f;
-		vptr->t = 0.0f;
-		vptr++;
-		xptr++;
-		yptr++;
+		dst_ptr->x = static_cast<float>(src_ptr->x);
+		dst_ptr->y = static_cast<float>(src_ptr->y);
+		src_ptr++;
+		dst_ptr++;
 	}
 
 	vertexCount += count;
 
 	if (useShanders) {
-		shaderProgram->setAttributeArray(shaderVertices, (float*)(vertices), 3, 20);
+		shaderProgram->setAttributeArray(shaderVertices, (float*)(vertices), 2, 0);
 	}
 }
 
@@ -351,7 +347,7 @@ void OpenGLWidget::Zoom(const int32_t shapeIndex)
 
 	if (shapeIndex < 0) {
 		for (auto shape : objects) {
-			Box shape_bounds = shape.GetBounds();
+			Box<double> shape_bounds = shape.GetBounds();
 			bounds.xmin = shape_bounds.xmin < bounds.xmin ? shape_bounds.xmin : bounds.xmin;
 			bounds.xmax = shape_bounds.xmax > bounds.xmax ? shape_bounds.xmax : bounds.xmax;
 			bounds.ymin = shape_bounds.ymin < bounds.ymin ? shape_bounds.ymin : bounds.ymin;
@@ -360,7 +356,7 @@ void OpenGLWidget::Zoom(const int32_t shapeIndex)
 	}
 	else {
 		if (objects.size() > shapeIndex) {
-			Box shape_bounds = objects[shapeIndex].GetBounds();
+			Box<double> shape_bounds = objects[shapeIndex].GetBounds();
 			double width = shape_bounds.Width();
 			double height = shape_bounds.Height();
 			double side = height > width ? height : width;
@@ -378,21 +374,18 @@ void OpenGLWidget::SetPolygon(const std::vector<p2t::Triangle*> &poly)
 		polygonVertexCount = 0;
 	}
 	uint32_t len = static_cast<uint32_t>(poly.size() * 3);
-	polygon = new Vertex [len];
+	polygon = new Point<float> [len];
 	polygonVertexCount = len;
 
-	Vertex *vptr = polygon;
+	Point<float> *dst_ptr = polygon;
 
 	p2t::Point* pt = 0;
 	for (auto ptri : poly) {
 		for (int i = 0; i < 3; i++) {
 			pt = ptri->GetPoint(i);
-			vptr->x = static_cast<float>(pt->x);
-			vptr->y = static_cast<float>(pt->y);
-			vptr->z = 0.0f;
-			vptr->s = 0.0f;
-			vptr->t = 0.0f;
-			vptr++;
+			dst_ptr->x = static_cast<float>(pt->x);
+			dst_ptr->y = static_cast<float>(pt->y);
+			dst_ptr++;
 		}
 	}
 }

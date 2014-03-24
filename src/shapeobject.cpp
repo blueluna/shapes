@@ -6,8 +6,7 @@ ShapeObject::ShapeObject()
 	: index(-1)
 	, type(0)
 	, vertexCount(0)
-	, xVertices(0)
-	, yVertices(0)
+	, vertices(0)
 {
 }
 
@@ -15,8 +14,7 @@ ShapeObject::ShapeObject(const SHPObject* obj)
 	: index(-1)
 	, type(0)
 	, vertexCount(0)
-	, xVertices(0)
-	, yVertices(0)
+	, vertices(0)
 {
 	Assign(obj);
 }
@@ -25,8 +23,7 @@ ShapeObject::ShapeObject(const ShapeObject &other)
 	: index(-1)
 	, type(0)
 	, vertexCount(0)
-	, xVertices(0)
-	, yVertices(0)
+	, vertices(0)
 {
 	Assign(other);
 }
@@ -45,8 +42,8 @@ ShapeObject& ShapeObject::operator = (const ShapeObject& other)
 void ShapeObject::Destroy()
 {
 	if (vertexCount > 0) {
-		delete [] xVertices;
-		delete [] yVertices;
+		delete [] vertices;
+		vertices = 0;
 		vertexCount = 0;
 	}
 	type = 0;
@@ -63,10 +60,17 @@ void ShapeObject::Assign(const SHPObject* obj)
 		type = obj->nSHPType;
 		vertexCount = obj->nVertices;
 		if (vertexCount > 0) {
-			xVertices = new double [vertexCount];
-			yVertices = new double [vertexCount];
-			memcpy(xVertices, obj->padfX, vertexCount * sizeof(double));
-			memcpy(yVertices, obj->padfY, vertexCount * sizeof(double));
+			vertices = new Point<double> [vertexCount];
+
+			double *xptr = obj->padfX, *yptr = obj->padfY;
+			Point<double> *pptr = vertices;
+			Point<double> *pend = pptr + vertexCount;
+			while (pptr < pend) {
+				pptr->Set(*xptr, *yptr);
+				xptr++;
+				yptr++;
+				pptr++;
+			}
 		}
 		bounds.ymin = obj->dfYMin;
 		bounds.xmin = obj->dfXMin;
@@ -103,10 +107,8 @@ void ShapeObject::Assign(const ShapeObject& other)
 		type = other.type;
 		vertexCount = other.vertexCount;
 		if (vertexCount > 0) {
-			xVertices = new double [vertexCount];
-			yVertices = new double [vertexCount];
-			memcpy(xVertices, other.xVertices, vertexCount * sizeof(double));
-			memcpy(yVertices, other.yVertices, vertexCount * sizeof(double));
+			vertices = new Point<double> [vertexCount];
+			memcpy(vertices, other.vertices, other.vertexCount * sizeof(Point<double>));
 		}
 		bounds = other.bounds;
 		parts = other.parts;
@@ -138,17 +140,12 @@ int ShapeObject::GetVertexCount() const
 	return vertexCount;
 }
 
-double* ShapeObject::GetXs() const
+const Point<double>* ShapeObject::GetVertices() const
 {
-	return xVertices;
+	return const_cast<const Point<double>*>(vertices);
 }
 
-double* ShapeObject::GetYs() const
-{
-	return yVertices;
-}
-
-Box ShapeObject::GetBounds() const
+Box<double> ShapeObject::GetBounds() const
 {
 	return bounds;
 }

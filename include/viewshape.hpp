@@ -27,7 +27,7 @@ protected:
 	int32_t					type;
 	int32_t					offset;
 	int32_t					length;
-	Box						bounds;
+	Box<double>				bounds;
 	std::vector<ViewPart>	parts;
 
 public:
@@ -37,7 +37,7 @@ public:
 	int32_t					GetIndex() const { return index; }
 	void					SetOffset(const int32_t offset);
 	int32_t					GetOffset() const;
-	Box						GetBounds() const;
+	Box<double>				GetBounds() const;
 
 	std::vector<ViewPart>	GetParts() const;
 };

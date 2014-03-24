@@ -25,9 +25,8 @@ protected:
 	int					index;
 	int					type;
 	int					vertexCount;
-	double				*xVertices;
-	double				*yVertices;
-	Box					bounds;
+	Point<double>		*vertices;
+	Box<double>			bounds;
 	std::vector<Part>	parts;
 
 public:
@@ -47,16 +46,15 @@ protected:
 	void Assign(const ShapeObject& obj);
 
 public:
-	int			GetIndex() const;
-	int			GetType() const;
-	std::string	GetTypeString() const;
+	int						GetIndex() const;
+	int						GetType() const;
+	std::string				GetTypeString() const;
 
-	int			GetVertexCount() const;
-	double*		GetXs() const;
-	double*		GetYs() const;
-	Box			GetBounds() const;
+	int						GetVertexCount() const;
+	const Point<double>*	GetVertices() const;
+	Box<double>				GetBounds() const;
 
-	std::vector<Part>   GetParts() const;
+	std::vector<Part>		GetParts() const;
 };
 
 std::string ShapeTypeAsString(int shapetype);

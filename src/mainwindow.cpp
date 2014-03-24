@@ -64,18 +64,18 @@ void MainWindow::onSelectShape(QTreeWidgetItem *item, int)
 			vertexFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text);
 			{
 				QTextStream vstrm(&vertexFile);
-				const double *x_ptr = object.GetXs();
-				const double *y_ptr = object.GetYs();
-				const double *x_end = x_ptr + object.GetVertexCount();
-				while (x_ptr < x_end) {
-					vstrm << *x_ptr << ", " << *y_ptr << "\n";
-					x_ptr++;
-					y_ptr++;
+				const Point<double> *p_ptr = object.GetVertices();
+				const Point<double> *p_end = p_ptr + vertexCount;
+				while (p_ptr < p_end) {
+					vstrm << p_ptr->x << ", " << p_ptr->y << "\n";
+					p_ptr++;
 				}
-				double x_first = object.GetXs()[0];
-				double y_first = object.GetYs()[0];
-				double x_last = object.GetXs()[object.GetVertexCount() - 1];
-				double y_last = object.GetYs()[object.GetVertexCount() - 1];
+				p_ptr = object.GetVertices();
+				double x_first = p_ptr->x;
+				double y_first = p_ptr->y;
+				p_ptr += (vertexCount - 1);
+				double x_last = p_ptr->x;
+				double y_last = p_ptr->y;
 				if (x_first == x_last && y_first == y_last) {
 					qDebug() << "First == Last";
 					vertexCount--;
@@ -86,7 +86,7 @@ void MainWindow::onSelectShape(QTreeWidgetItem *item, int)
 			QFile triangleFile("triangle.txt");
 			triangleFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text);
 
-			std::vector<p2t::Point*> polyline = CreatePolyLine(object.GetXs(), object.GetYs(), vertexCount);
+			std::vector<p2t::Point*> polyline = CreatePolyLine(object.GetVertices(), vertexCount);
 			try {
 				QTextStream tstrm(&triangleFile);
 				p2t::CDT cdt(polyline);

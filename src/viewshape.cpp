@@ -29,7 +29,7 @@ int32_t ViewShape::GetOffset() const
 	return offset;
 }
 
-Box ViewShape::GetBounds() const
+Box<double> ViewShape::GetBounds() const
 {
 	return bounds;
 }

@@ -4,18 +4,16 @@
 #include <vector>
 #include "../poly2tri/poly2tri.h"
 
-std::vector<p2t::Point*> CreatePolyLine(const double *x, const double *y, uint32_t v_count)
+std::vector<p2t::Point*> CreatePolyLine(const Point<double> *points, uint32_t count)
 {
-	const double *x_ptr = x;
-	const double *y_ptr = y;
-	const double *x_end = x + v_count;
+	const Point<double> *p_ptr = points;
+	const Point<double> *p_end = p_ptr + count;
 	std::vector<p2t::Point*> polyline;
-	polyline.reserve(v_count);
+	polyline.reserve(count);
 
-	while (x_ptr < x_end) {
-		polyline.push_back(new p2t::Point(*x_ptr, *y_ptr));
-		x_ptr++;
-		y_ptr++;
+	while (p_ptr < p_end) {
+		polyline.push_back(new p2t::Point(p_ptr->x, p_ptr->y));
+		p_ptr++;
 	}
 	return polyline;
 }
